@@ -1,4 +1,4 @@
-# The API of `promisestuff`
+# The Core API of `promisestuff`
 
 A "promise" is an abstract concept. It is a contract stating that at some point
 in the future, some process will occur, after which zero or more values will be

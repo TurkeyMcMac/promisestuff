@@ -1,9 +1,10 @@
 # `promisestuff`
 
-This library implements promises for Lua. So far I have tested it with Lua 5.1
-and Lua 5.4. (You can test it yourself by running `busted tests.lua`.) You can
-read about the API in [API.md](API.md). Currently, to include the library in
-your program, you must do as follows:
-`local promisestuff = dofile("promisestuff")`.
+This library implements promises for Lua. It was intended for use with Minetest,
+but you can use it for other stuff by just including "promisestuff.lua". So far
+I have tested it with Lua 5.1 and Lua 5.4.
+
+I have documented the [core API](doc/core.md) as well as the [Minetest-specific
+API](doc/minetest.md).
 
 All files in this repository are licensed under the MIT license.
