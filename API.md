@@ -41,6 +41,12 @@ is an error.
 
 ## Utilities
 
+### `promisestuff.promise(promise)`
+
+Creates a new channel. `promise` is a callable value describing a promise to
+send the channel some value(s); it is called with the channel as its first
+argument. The channel is then returned.
+
 ### `promisestuff.id(...)`
 
 Returns a channel that has been sent the passed values.

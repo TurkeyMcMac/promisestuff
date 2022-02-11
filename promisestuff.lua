@@ -92,6 +92,12 @@ end
 
 -- Utilities --
 
+function promisestuff.promise(promise)
+	local channel = promisestuff.channel()
+	promise(channel)
+	return channel
+end
+
 function promisestuff.id(...)
 	local channel = promisestuff.channel()
 	channel:send(...)

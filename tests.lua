@@ -36,6 +36,15 @@ describe("promisestuff", function()
 		end)
 	end)
 
+	it("promise", function()
+		local channel = promisestuff.promise(function(channel)
+			channel:send(1)
+		end)
+		local out
+		channel:receiver(function(v) out = v end)
+		assert.same(1, out)
+	end)
+
 	it("id", function()
 		local channel = promisestuff.id(1, nil, 5)
 		local a, b, c
