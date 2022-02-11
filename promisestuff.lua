@@ -32,6 +32,12 @@ local co_running, co_resume, co_yield =
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
+promisestuff.version = {major = 0, minor = 0, patch = 1}
+promisestuff.versionstring = ("%d.%d.%d"):format(
+	promisestuff.version.major,
+	promisestuff.version.minor,
+	promisestuff.version.patch)
+
 -- Internal Functions --
 
 local function fast_pack(...)

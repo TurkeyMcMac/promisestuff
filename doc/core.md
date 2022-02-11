@@ -93,3 +93,14 @@ channel receives values. Once it does, the coroutine is resumed, and `await`
 returns the received values.
 
 This method may only be called within a coroutine, of course.
+
+## Version Information
+
+### `promisestuff.version`
+
+This is a table with fields `major`, `minor`, and `patch`. Together, these
+nonnegative integers constitute the version of the library.
+
+### `promisestuff.versionstring`
+
+This string also represents the version of the library.
