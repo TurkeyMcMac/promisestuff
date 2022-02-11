@@ -32,7 +32,7 @@ local co_running, co_resume, co_yield =
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
-promisestuff.version = {major = 0, minor = 0, patch = 1}
+promisestuff.version = {major = 0, minor = 0, patch = 2}
 promisestuff.versionstring = ("%d.%d.%d"):format(
 	promisestuff.version.major,
 	promisestuff.version.minor,
@@ -54,9 +54,7 @@ end
 local function fast_unpack(values, n_values)
 	if n_values == 1 then
 		return values
-	elseif n_values == 0 then
-		return
-	else
+	elseif n_values > 1 then
 		return unpack(values, 1, n_values)
 	end
 end
