@@ -32,7 +32,7 @@ local co_running, co_resume, co_yield =
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
-promisestuff.version = {major = 0, minor = 0, patch = 2}
+promisestuff.version = {major = 0, minor = 0, patch = 3}
 promisestuff.versionstring = ("%d.%d.%d"):format(
 	promisestuff.version.major,
 	promisestuff.version.minor,
@@ -44,7 +44,7 @@ local function fast_pack(...)
 	local n_values = select("#", ...)
 	local values
 	if n_values == 1 then
-		values = select(1, ...)
+		values = ...
 	elseif n_values > 1 then
 		values = {...}
 	end
