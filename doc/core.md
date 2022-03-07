@@ -13,6 +13,9 @@ message can only be received by a receiver callback. This callback can only be
 set once, before or after the message is sent. Within this document, setting a
 channel's receiver callback may be referred to as "consuming" the channel.
 
+Note: The functions in a channel's method table will not change over its
+lifetime, meaning these functions can be fetched at one time then called later.
+
 ## Primitives
 
 ### `promisestuff.channel()`
@@ -25,9 +28,6 @@ Sends the passed values to the channel. This should only be called within the
 implementation of a promise.
 
 Calling this method more than once on one channel is an error.
-
-Note: `promise.send` will remain the same function throughout the lifetime of
-`promise`.
 
 ### `channel:receiver(cb)`
 
