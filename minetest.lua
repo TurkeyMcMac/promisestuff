@@ -22,8 +22,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]
 
-local modname = minetest.get_current_modname()
-local modpath = minetest.get_modpath(modname)
+local promisestuff = ...
 
-_G[modname] = dofile(modpath .. "/core.lua")
-assert(loadfile(modpath .. "/minetest.lua"))(_G[modname])
+function promisestuff.after(time)
+	local channel = promisestuff.channel()
+	minetest.after(time, channel.send, channel)
+	return channel
+end
+
+local function emerge_callback(blockpos, action, calls_remaining, param)
+	if action == minetest.EMERGE_CANCELLED or
+	   action == minetest.EMERGE_ERRORED then
+		local hash = minetest.hash_node_position(blockpos)
+		if param.fails then
+			param.fails[hash] = action
+		else
+			param.fails = {[hash] = action}
+		end
+	end
+	if calls_remaining == 0 then
+		-- Defer resumption to avoid blocking the emerge thread.
+		minetest.after(0, param.channel.send, param.channel,
+			param.fails == nil, param.fails)
+	end
+end
+function promisestuff.emerge_area(pos1, pos2)
+	local channel = promisestuff.channel()
+	minetest.emerge_area(pos1, pos2, emerge_callback, {channel = channel})
+	return channel
+end

@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]
 
-local promisestuff = dofile("promisestuff.lua")
+local promisestuff = dofile("core.lua")
 
 describe("promisestuff", function()
 	it("receiver before send", function()
