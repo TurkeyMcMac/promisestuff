@@ -11,7 +11,7 @@ files["minetest.lua"] = {
 	read_globals = {"minetest"},
 }
 
-files["coretests.lua"] = {
+files["spec/core_spec.lua"] = {
 	read_globals = {"describe", "it", "assert.same", "assert.has_errors"},
 }
 
