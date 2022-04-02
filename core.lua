@@ -32,7 +32,7 @@ local co_running, co_resume, co_yield =
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
-promisestuff.version = {major = 0, minor = 0, patch = 3}
+promisestuff.version = {major = 0, minor = 1, patch = 0}
 promisestuff.versionstring = ("%d.%d.%d"):format(
 	promisestuff.version.major,
 	promisestuff.version.minor,
@@ -115,11 +115,38 @@ function channel_methods:wrap(wrapper)
 	return wrapped
 end
 
+function channel_methods:if_wrap(wrapper)
+	assert(wrapper ~= nil, "Invalid invocation of channel method 'if_wrap'")
+	local wrapped = promisestuff.channel()
+	self:receiver(function(...)
+		if ... then
+			wrapped:send(wrapper(...))
+		else
+			wrapped:send(...)
+		end
+	end)
+	return wrapped
+end
+
 function channel_methods:chain(adapter)
 	assert(adapter ~= nil, "Invalid invocation of channel method 'chain'")
 	local chain = promisestuff.channel()
 	self:receiver(function(...)
 		adapter(...):receiver(function(...) chain:send(...) end)
+	end)
+	return chain
+end
+
+function channel_methods:if_chain(adapter)
+	assert(adapter ~= nil,
+		"Invalid invocation of channel method 'if_chain'")
+	local chain = promisestuff.channel()
+	self:receiver(function(...)
+		if ... then
+			adapter(...):receiver(function(...) chain:send(...) end)
+		else
+			chain:send(...)
+		end
 	end)
 	return chain
 end

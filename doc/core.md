@@ -57,12 +57,24 @@ Consumes the channel and returns a new channel. When the consumed channel
 receives values, they are passed to `wrapper`, which is a callable value. The
 resulting return values of `wrapper` are sent to the new channel.
 
+### `channel:if_wrap(wrapper)`
+
+Does the same thing as `wrap` when the consumed channel receives values if at
+least one value is received and the first received value is truthy. Otherwise,
+the received values are just sent to the returned channel.
+
 ### `channel:chain(adapter)`
 
 Consumes the channel and returns a new channel. When the consumed channel
 receives values, they are passed to `adapter`, which is a callable value.
 `adapter` returns another channel, which is consumed. When this channel receives
 values, they are sent to the channel returned by the `chain` method.
+
+### `channel:if_chain(adapter)`
+
+Does the same thing as `chain` when the consumed channel receives values if at
+least one value is received and the first received value is truthy. Otherwise,
+the received values are just sent to the returned channel.
 
 ### `promisestuff.barrier(channels)`
 

@@ -95,6 +95,33 @@ describe("promisestuff", function()
 		assert.same(2, out)
 	end)
 
+	it("if_wrap with nothing", function()
+		local channel = promisestuff.channel()
+		local wrapped = channel:if_wrap(function(x) return x + 1 end)
+		local n_sent
+		wrapped:receiver(function(...) n_sent = select("#", ...) end)
+		channel:send()
+		assert.same(0, n_sent)
+	end)
+
+	it("if_wrap with false", function()
+		local channel = promisestuff.channel()
+		local wrapped = channel:if_wrap(function(_, x) return x + 1 end)
+		local out
+		wrapped:receiver(function(x) out = x end)
+		channel:send(false, 1)
+		assert.same(false, out)
+	end)
+
+	it("if_wrap with true", function()
+		local channel = promisestuff.channel()
+		local wrapped = channel:if_wrap(function(_, x) return x + 1 end)
+		local out
+		wrapped:receiver(function(x) out = x end)
+		channel:send(true, 1)
+		assert.same(2, out)
+	end)
+
 	it("chain", function()
 		local channel1 = promisestuff.channel()
 		local chained = channel1:chain(function(x)
@@ -103,6 +130,39 @@ describe("promisestuff", function()
 		local out
 		chained:receiver(function(x) out = x end)
 		channel1:send(1)
+		assert.same(2, out)
+	end)
+
+	it("if_chain with nothing", function()
+		local channel = promisestuff.channel()
+		local chain = channel:if_chain(function(x)
+			return promisestuff.id(x + 1)
+		end)
+		local n_sent
+		chain:receiver(function(...) n_sent = select("#", ...) end)
+		channel:send()
+		assert.same(0, n_sent)
+	end)
+
+	it("if_chain with false", function()
+		local channel = promisestuff.channel()
+		local chain = channel:if_chain(function(_, x)
+			return promisestuff.id(x + 1)
+		end)
+		local out
+		chain:receiver(function(x) out = x end)
+		channel:send(false, 1)
+		assert.same(false, out)
+	end)
+
+	it("if_chain with true", function()
+		local channel = promisestuff.channel()
+		local chain = channel:if_chain(function(_, x)
+			return promisestuff.id(x + 1)
+		end)
+		local out
+		chain:receiver(function(x) out = x end)
+		channel:send(true, 1)
 		assert.same(2, out)
 	end)
 
