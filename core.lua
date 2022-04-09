@@ -32,7 +32,7 @@ local co_running, co_resume, co_yield =
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
-promisestuff.version = {major = 0, minor = 1, patch = 0}
+promisestuff.version = {major = 0, minor = 2, patch = 0}
 promisestuff.versionstring = ("%d.%d.%d"):format(
 	promisestuff.version.major,
 	promisestuff.version.minor,
@@ -83,7 +83,7 @@ function channel_methods:receiver(cb)
 end
 
 function channel_methods:send(...)
-	assert(self.n_args == nil, "Method 'send' called twice on one channel")
+	assert(self.n_args == nil, "Attempt to send to a channel a second time")
 	local cb = self.cb
 	if cb ~= nil then
 		self.cb = true -- Allow for garbage collection
@@ -93,6 +93,7 @@ function channel_methods:send(...)
 		self.args, self.n_args = fast_pack(...)
 	end
 end
+channel_methods.__call = channel_methods.send
 
 -- Utilities --
 
@@ -104,14 +105,14 @@ end
 
 function promisestuff.id(...)
 	local channel = promisestuff.channel()
-	channel:send(...)
+	channel(...)
 	return channel
 end
 
 function channel_methods:wrap(wrapper)
 	assert(wrapper ~= nil, "Invalid invocation of channel method 'wrap'")
 	local wrapped = promisestuff.channel()
-	self:receiver(function(...) wrapped:send(wrapper(...)) end)
+	self:receiver(function(...) wrapped(wrapper(...)) end)
 	return wrapped
 end
 
@@ -120,9 +121,9 @@ function channel_methods:if_wrap(wrapper)
 	local wrapped = promisestuff.channel()
 	self:receiver(function(...)
 		if ... then
-			wrapped:send(wrapper(...))
+			wrapped(wrapper(...))
 		else
-			wrapped:send(...)
+			wrapped(...)
 		end
 	end)
 	return wrapped
@@ -131,9 +132,7 @@ end
 function channel_methods:chain(adapter)
 	assert(adapter ~= nil, "Invalid invocation of channel method 'chain'")
 	local chain = promisestuff.channel()
-	self:receiver(function(...)
-		adapter(...):receiver(function(...) chain:send(...) end)
-	end)
+	self:receiver(function(...) adapter(...):receiver(chain) end)
 	return chain
 end
 
@@ -143,9 +142,9 @@ function channel_methods:if_chain(adapter)
 	local chain = promisestuff.channel()
 	self:receiver(function(...)
 		if ... then
-			adapter(...):receiver(function(...) chain:send(...) end)
+			adapter(...):receiver(chain)
 		else
-			chain:send(...)
+			chain(...)
 		end
 	end)
 	return chain
@@ -156,7 +155,7 @@ function promisestuff.barrier(channels)
 	local n_left = #channels
 	local function receiver()
 		n_left = n_left - 1
-		if n_left == 0 then barrier:send() end
+		if n_left == 0 then barrier() end
 	end
 	for _, channel in ipairs(channels) do
 		channel:receiver(receiver)
@@ -172,7 +171,7 @@ function promisestuff.collection(channels)
 		channel:receiver(function(...)
 			results[i] = {n = select("#", ...), ...}
 			n_left = n_left - 1
-			if n_left == 0 then collection:send(results) end
+			if n_left == 0 then collection(results) end
 		end)
 	end
 	return collection
@@ -183,7 +182,7 @@ function promisestuff.first(channels)
 	local receptacle = first
 	local function receiver(...)
 		if receptacle then
-			receptacle:send(...)
+			receptacle(...)
 			receptacle = nil
 		end
 	end

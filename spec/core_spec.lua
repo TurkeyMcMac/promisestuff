@@ -68,6 +68,16 @@ describe("promisestuff", function()
 		end)
 	end)
 
+	it("callable channels", function()
+		local channel1 = promisestuff.channel()
+		local channel2 = promisestuff.channel()
+		local out
+		channel1:receiver(channel2)
+		channel2:receiver(function(x) out = x end)
+		channel1(123)
+		assert.same(123, out)
+	end)
+
 	it("promise", function()
 		local channel = promisestuff.promise(function(channel)
 			channel:send(1)

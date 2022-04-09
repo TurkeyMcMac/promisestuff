@@ -22,12 +22,12 @@ lifetime, meaning these functions can be fetched at one time then called later.
 
 Returns a new, unique channel. 
 
-### `channel:send(...)`
+### `channel:send(...)` or `channel(...)`
 
-Sends the passed values to the channel. This should only be called within the
+Sends the passed values to the channel. This should only be done within the
 implementation of a promise.
 
-Calling this method more than once on one channel is an error.
+Sending values more than once to a given channel is an error.
 
 ### `channel:receiver(cb)`
 
