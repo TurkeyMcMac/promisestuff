@@ -12,7 +12,7 @@ files["minetest.lua"] = {
 }
 
 files["spec/core_spec.lua"] = {
-	read_globals = {"describe", "it", "assert.same", "assert.has_errors"},
+	read_globals = {"describe", "it", "assert"},
 }
 
 files["init.lua"] = {

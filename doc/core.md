@@ -22,6 +22,10 @@ lifetime, meaning these functions can be fetched at one time then called later.
 
 Returns a new, unique channel. 
 
+### `promisestuff.is_channel(v)`
+
+Returns whether the passed value is a channel.
+
 ### `channel:send(...)` or `channel(...)`
 
 Sends the passed values to the channel. This should only be done within the

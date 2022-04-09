@@ -25,6 +25,15 @@ SOFTWARE.
 local promisestuff = dofile("core.lua")
 
 describe("promisestuff", function()
+	it("is_channel", function()
+		assert.is_true(promisestuff.is_channel(promisestuff.channel()))
+		assert.is_false(promisestuff.is_channel({}))
+		assert.is_false(promisestuff.is_channel(nil))
+		assert.is_false(promisestuff.is_channel(false))
+		assert.is_false(promisestuff.is_channel(1))
+		assert.is_true(promisestuff.is_channel(promisestuff.channel()))
+	end)
+
 	it("receiver before send", function()
 		local channel = promisestuff.channel()
 		local out

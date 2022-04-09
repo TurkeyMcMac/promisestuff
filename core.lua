@@ -24,15 +24,16 @@ SOFTWARE.
 
 local promisestuff = {}
 
-local setmetatable, assert, select, ipairs, unpack =
-	setmetatable, assert, select, ipairs, unpack or table.unpack
+local getmetatable, setmetatable, assert, select, ipairs =
+	getmetatable, setmetatable, assert, select, ipairs
+local unpack = unpack or table.unpack
 local co_running, co_resume, co_yield =
 	coroutine.running, coroutine.resume, coroutine.yield
 
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
-promisestuff.version = {major = 0, minor = 2, patch = 0}
+promisestuff.version = {major = 0, minor = 3, patch = 0}
 promisestuff.versionstring = ("%d.%d.%d"):format(
 	promisestuff.version.major,
 	promisestuff.version.minor,
@@ -66,6 +67,10 @@ channel_methods.__index = channel_methods
 
 function promisestuff.channel()
 	return setmetatable({}, channel_methods)
+end
+
+function promisestuff.is_channel(v)
+	return getmetatable(v) == channel_methods
 end
 
 function channel_methods:receiver(cb)
