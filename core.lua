@@ -33,7 +33,7 @@ local co_running, co_resume, co_yield =
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
-promisestuff.version = {major = 0, minor = 3, patch = 0}
+promisestuff.version = {major = 0, minor = 4, patch = 0}
 promisestuff.versionstring = ("%d.%d.%d"):format(
 	promisestuff.version.major,
 	promisestuff.version.minor,

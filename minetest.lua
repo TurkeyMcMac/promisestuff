@@ -51,3 +51,9 @@ function promisestuff.emerge_area(pos1, pos2)
 	minetest.emerge_area(pos1, pos2, emerge_callback, {channel = channel})
 	return channel
 end
+
+function promisestuff.handle_async(func, ...)
+	local channel = promisestuff.channel()
+	minetest.handle_async(func, function(...) channel(...) end, ...)
+	return channel
+end
