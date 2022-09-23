@@ -24,8 +24,8 @@ SOFTWARE.
 
 local promisestuff = {}
 
-local getmetatable, setmetatable, assert, select, ipairs =
-	getmetatable, setmetatable, assert, select, ipairs
+local getmetatable, setmetatable, select, ipairs, error =
+	getmetatable, setmetatable, select, ipairs, error
 local unpack = unpack or table.unpack
 local co_running, co_resume, co_yield =
 	coroutine.running, coroutine.resume, coroutine.yield
@@ -33,7 +33,7 @@ local co_running, co_resume, co_yield =
 local _ENV = {}
 if setfenv then setfenv(1, _ENV) end
 
-promisestuff.version = {major = 0, minor = 4, patch = 0}
+promisestuff.version = {major = 0, minor = 4, patch = 1}
 promisestuff.versionstring = ("%d.%d.%d"):format(
 	promisestuff.version.major,
 	promisestuff.version.minor,
@@ -74,8 +74,12 @@ function promisestuff.is_channel(v)
 end
 
 function channel_methods:receiver(cb)
-	assert(cb ~= nil, "Invalid invocation of channel method 'receiver'")
-	assert(self.cb == nil, "Method 'receiver' called twice on one channel")
+	if cb == nil then
+		error("Invalid invocation of channel method 'receiver'", 2)
+	end
+	if self.cb ~= nil then
+		error("Method 'receiver' called twice on one channel", 2)
+	end
 	local n_args = self.n_args
 	if n_args ~= nil then
 		local args = self.args
@@ -88,7 +92,9 @@ function channel_methods:receiver(cb)
 end
 
 function channel_methods:send(...)
-	assert(self.n_args == nil, "Attempt to send to a channel a second time")
+	if self.n_args ~= nil then
+		error("Attempt to send to a channel a second time", 2)
+	end
 	local cb = self.cb
 	if cb ~= nil then
 		self.cb = true -- Allow for garbage collection
@@ -115,14 +121,18 @@ function promisestuff.id(...)
 end
 
 function channel_methods:wrap(wrapper)
-	assert(wrapper ~= nil, "Invalid invocation of channel method 'wrap'")
+	if wrapper == nil then
+		error("Invalid invocation of channel method 'wrap'", 2)
+	end
 	local wrapped = promisestuff.channel()
 	self:receiver(function(...) wrapped(wrapper(...)) end)
 	return wrapped
 end
 
 function channel_methods:if_wrap(wrapper)
-	assert(wrapper ~= nil, "Invalid invocation of channel method 'if_wrap'")
+	if wrapper == nil then
+		error("Invalid invocation of channel method 'if_wrap'", 2)
+	end
 	local wrapped = promisestuff.channel()
 	self:receiver(function(...)
 		if ... then
@@ -135,15 +145,18 @@ function channel_methods:if_wrap(wrapper)
 end
 
 function channel_methods:chain(adapter)
-	assert(adapter ~= nil, "Invalid invocation of channel method 'chain'")
+	if adapter == nil then
+		error("Invalid invocation of channel method 'chain'", 2)
+	end
 	local chain = promisestuff.channel()
 	self:receiver(function(...) adapter(...):receiver(chain) end)
 	return chain
 end
 
 function channel_methods:if_chain(adapter)
-	assert(adapter ~= nil,
-		"Invalid invocation of channel method 'if_chain'")
+	if adapter == nil then
+		error("Invalid invocation of channel method 'if_chain'", 2)
+	end
 	local chain = promisestuff.channel()
 	self:receiver(function(...)
 		if ... then
@@ -199,7 +212,9 @@ end
 
 function channel_methods:await()
 	local co = co_running()
-	assert(co, "Channel method 'await' called outside a coroutine")
+	if not co then
+		error("Channel method 'await' called outside a coroutine", 2)
+	end
 	local yielded = false
 	local n_retvals
 	local retvals
